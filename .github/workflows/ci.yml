@@ -11,13 +11,14 @@ on:
         type: string
 jobs:
   build:
-    if: ${{ inputs.apptype == 'java' }}
     runs-on: self-hosted
     steps:
       - uses: actions/checkout@v4
       - name: Run a one-line script
+        if: ${{ inputs.apptype == 'java' }}
         run: mvn clean package
       - name: Upload artifact
+        if: ${{ inputs.apptype == 'java' }}
         uses: actions/upload-artifact@v4
         with:
           name: ${{ inputs.component }}-jar
