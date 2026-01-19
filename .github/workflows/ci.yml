@@ -10,6 +10,20 @@ on:
         required: true
         type: string
 jobs:
+  build:
+    if: ${{ inputs.apptype == 'java' }}
+    runs-on: self-hosted
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run a one-line script
+        run: mvn clean package
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.component }}-jar
+          path: target/${{ inputs.component }}-1.0.jar
+          retention-days: 1
+
   test:
     runs-on: self-hosted
     steps:
