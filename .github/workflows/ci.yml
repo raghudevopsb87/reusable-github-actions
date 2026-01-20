@@ -82,10 +82,18 @@ jobs:
         with:
           repository: raghudevopsb87/roboshop-helm-v1
       - name: Get kubectl config
-        run: echo aws eks update-kubeconfig --name qa
-      - name: Helm deploy app
-        run: echo helm upgrade -i ${{ inputs.component }} . -f qa-project-values/${{ inputs.component }}.yml
-
+        run: aws eks update-kubeconfig --name dev
+      - name: argocd login
+        run: |
+          url=$(kubectl get svc argocd-server  -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+          argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
+          argocd login $url --insecure --username admin --password $argocd_password
+      - name: Create App in ArgoCD
+        run: argocd app create ${{ inputs.component }} --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values qa-project-values/${{ inputs.component }}.yml
+      - name: Sync App in ArgoCD
+        run: argocd app sync ${{ inputs.component }}
+      - name: ArgoCD App health Check
+        run: argocd app wait ${{ inputs.component }} --timeout 60
 
   uat-deploy:
     needs: qa-deploy
@@ -96,9 +104,18 @@ jobs:
         with:
           repository: raghudevopsb87/roboshop-helm-v1
       - name: Get kubectl config
-        run: echo aws eks update-kubeconfig --name uat
-      - name: Helm deploy app
-        run: echo helm upgrade -i ${{ inputs.component }} . -f uat-project-values/${{ inputs.component }}.yml
+        run: aws eks update-kubeconfig --name dev
+      - name: argocd login
+        run: |
+          url=$(kubectl get svc argocd-server  -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+          argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
+          argocd login $url --insecure --username admin --password $argocd_password
+      - name: Create App in ArgoCD
+        run: argocd app create ${{ inputs.component }} --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values uat-project-values/${{ inputs.component }}.yml
+      - name: Sync App in ArgoCD
+        run: argocd app sync ${{ inputs.component }}
+      - name: ArgoCD App health Check
+        run: argocd app wait ${{ inputs.component }} --timeout 60
 
   prod-deploy:
     needs: uat-deploy
@@ -109,6 +126,15 @@ jobs:
         with:
           repository: raghudevopsb87/roboshop-helm-v1
       - name: Get kubectl config
-        run: echo aws eks update-kubeconfig --name prod
-      - name: Helm deploy app
-        run: echo helm upgrade -i ${{ inputs.component }} . -f prod-project-values/${{ inputs.component }}.yml
+        run: aws eks update-kubeconfig --name dev
+      - name: argocd login
+        run: |
+          url=$(kubectl get svc argocd-server  -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
+          argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
+          argocd login $url --insecure --username admin --password $argocd_password
+      - name: Create App in ArgoCD
+        run: argocd app create ${{ inputs.component }} --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values prod-project-values/${{ inputs.component }}.yml
+      - name: Sync App in ArgoCD
+        run: argocd app sync ${{ inputs.component }}
+      - name: ArgoCD App health Check
+        run: argocd app wait ${{ inputs.component }} --timeout 60
