@@ -61,11 +61,8 @@ jobs:
           repository: raghudevopsb87/roboshop-helm-v1
       - name: Get kubectl config
         run: aws eks update-kubeconfig --name dev
-      - name: argocd login
-        run: |
-          url=$(kubectl get svc argocd-server  -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
-          argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
-          echo $url $argocd_password
+      - name: Helm deploy app
+        run: helm upgrade -i ${{ inputs.component }} . -f dev-project-values/${{ inputs.component }}.yml
 
   qa-deploy:
     needs: dev-deploy
