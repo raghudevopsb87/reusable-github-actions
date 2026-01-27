@@ -63,7 +63,6 @@ jobs:
         run: aws eks update-kubeconfig --name dev
       - name: argocd login
         run: |
-          url=$(kubectl get svc argocd-server  -o jsonpath='{.status.loadBalancer.ingress[*].hostname}')
           argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
           argocd login https://argocd-dev.rdevopsb87.online/ --insecure --username admin --password $argocd_password
       - name: Create App in ArgoCD
