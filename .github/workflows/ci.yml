@@ -64,7 +64,7 @@ jobs:
       - name: argocd login
         run: |
           argocd_password=$(kubectl get secrets argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 --decode)
-          argocd login https://argocd-dev.rdevopsb87.online/ --insecure --username admin --password $argocd_password
+          argocd login argocd-dev.rdevopsb87.online --insecure --username admin --password $argocd_password
       - name: Create App in ArgoCD
         run: argocd app create ${{ inputs.component }} --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values dev-project-values/${{ inputs.component }}.yml
       - name: Sync App in ArgoCD
