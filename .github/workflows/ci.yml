@@ -69,7 +69,7 @@ jobs:
           # After enabling https
           argocd login argocd-dev.rdevopsb87.online --username admin --password $argocd_password --skip-test-tls --grpc-web
       - name: Create App in ArgoCD
-        run: argocd app create ${{ inputs.component }} --upsert --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values dev-project-values/${{ inputs.component }}.yml --helm-set appVersion=${{ github.sha }}
+        run: argocd app create ${{ inputs.component }} --upsert --repo https://github.com/raghudevopsb87/roboshop-helm-v1.git --path . --dest-namespace default --dest-server https://kubernetes.default.svc --values dev-project-values/${{ inputs.component }}.yml --helm-set appVersion=${{ github.sha }} --dest-namespace app
       - name: Sync App in ArgoCD
         run: argocd app sync ${{ inputs.component }}
       - name: ArgoCD App health Check 
