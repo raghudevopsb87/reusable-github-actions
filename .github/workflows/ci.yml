@@ -24,10 +24,10 @@ jobs:
           name: ${{ inputs.component }}-jar
           path: target/${{ inputs.component }}-1.0.jar
           retention-days: 1
-      - name: Run SonarScan - Non Java
-        if: ${{ inputs.apptype == 'java' }}
-        run: /home/github/sonar-scanner-7.1.0.4889-linux-x64/bin/sonar-scanner -Dsonar.host.url=http://172.31.25.44:9000/ -Dsonar.token=sqa_f218849c29410b6e4079014701257cef553bf181 -Dsonar.projectKey=${{ inputs.component }} -Dsonar.java.binaries=./target/
       - name: Run SonarScan - Java
+        if: ${{ inputs.apptype = 'java' }}
+        run: /home/github/sonar-scanner-7.1.0.4889-linux-x64/bin/sonar-scanner -Dsonar.host.url=http://172.31.25.44:9000/ -Dsonar.token=sqa_f218849c29410b6e4079014701257cef553bf181 -Dsonar.projectKey=${{ inputs.component }} -Dsonar.java.binaries=./target/
+      - name: Run SonarScan - Non Java
         if: ${{ inputs.apptype != 'java' }}
         run: /home/github/sonar-scanner-7.1.0.4889-linux-x64/bin/sonar-scanner -Dsonar.host.url=http://172.31.25.44:9000/ -Dsonar.token=sqa_f218849c29410b6e4079014701257cef553bf181 -Dsonar.projectKey=${{ inputs.component }}
 
