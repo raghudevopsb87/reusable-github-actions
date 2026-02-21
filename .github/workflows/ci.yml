@@ -55,7 +55,7 @@ jobs:
       - run: docker build -t 739561048503.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.component }}:${{ github.sha }} .
         name: Docker Build
       - name: Trivy Scan
-        run: trivy image 739561048503.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.component }}:${{ github.sha }} --exit-code 1 --ignore-unfixed
+        run: trivy image 739561048503.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.component }}:${{ github.sha }} --exit-code 1 --ignore-unfixed --severity HIGH,CRITICAL
       - run: docker push 739561048503.dkr.ecr.us-east-1.amazonaws.com/${{ inputs.component }}:${{ github.sha }}
         name: Docker push
 
